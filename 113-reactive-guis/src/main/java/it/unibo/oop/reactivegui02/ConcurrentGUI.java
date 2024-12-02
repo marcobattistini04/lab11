@@ -15,8 +15,8 @@ import javax.swing.SwingUtilities;
  */
 @SuppressWarnings("PMD.AvoidPrintStackTrace")
 public final class ConcurrentGUI extends JFrame {
-    private static final double WIDTH_PERC = 0.2;
-    private static final double HEIGHT_PERC = 0.1;
+    private static final double WIDTH_PERC = 0.3;
+    private static final double HEIGHT_PERC = 0.15;
     private final JLabel display = new JLabel();
     private final JButton up = new JButton("up");
     private final JButton down = new JButton("down");
@@ -39,40 +39,38 @@ public final class ConcurrentGUI extends JFrame {
         final Agent agent = new Agent();
         new Thread(agent).start();
 
-        stop.addActionListener(event -> agent.stopCounting());
         up.addActionListener(event -> agent.startCountingUp());
         down.addActionListener(event -> agent.startCountingDown());
+        stop.addActionListener(event -> {
+            agent.stopCounting();
+            up.setEnabled(false);
+            down.setEnabled(false);
+            stop.setEnabled(false);
+        });
+        
     }
 
     private class Agent implements Runnable {
-        private volatile boolean stop;
+        private volatile boolean  stop;
         private boolean up = true;
-        private boolean down;
         private int counter;
 
         @Override
         public void run() {
-                while (this.up && !this.stop) {
-                    try {
+                while(!stop) {
+                     try {
                         final var nextText = Integer.toString(this.counter);
                         SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
-                        this.counter++;
+                        if (this.up) {
+                            this.counter++;
+                        } else {
+                            this.counter--;
+                        }
                         Thread.sleep(100);
                     } catch (InvocationTargetException | InterruptedException ex) {
                         ex.printStackTrace();
                     }
                 }
-                while (this.down && !this.stop) {
-                    try {
-                        final var nextText = Integer.toString(this.counter);
-                        SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
-                        this.counter--;
-                        Thread.sleep(100);
-                    } catch (InvocationTargetException | InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                
             }
 
         /**
@@ -84,11 +82,9 @@ public final class ConcurrentGUI extends JFrame {
 
         public void startCountingUp() {
             this.up = true;
-            this.down = false;
         }
 
-        public void startCountingDown() {
-            this.down = true;
+        public void startCountingDown() {;
             this.up = false;
         }
     }

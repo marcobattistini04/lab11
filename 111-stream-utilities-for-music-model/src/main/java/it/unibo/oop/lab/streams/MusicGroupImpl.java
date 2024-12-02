@@ -31,7 +31,9 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return this.songs.stream()
+        .map(song -> song.getSongName())
+        .sorted();
     }
 
     @Override
@@ -46,6 +48,9 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public int countSongs(final String albumName) {
+        if (this.albums.containsKey(albumName)) {
+            return this.albums.get(albumName);
+        }
         return -1;
     }
 
@@ -66,7 +71,23 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        Set<String> set = this.albums.keySet();
+        Optional<String> albumName = Optional.empty();
+        double maxDuration = 0.0;
+        for(final String album : set) {
+            final double currentDuration = this.songs.stream()
+            .filter(song -> song.getAlbumName().isPresent())
+            .filter(song -> song.getAlbumName().get().equals(album))
+            .map(song -> song.getDuration())
+            .reduce((a, b) -> a + b)
+            .get();
+            if(currentDuration >= maxDuration) {
+                maxDuration = currentDuration;
+                albumName = Optional.ofNullable(album);
+            }
+        }
+
+        return albumName;
     }
 
     private static final class Song {

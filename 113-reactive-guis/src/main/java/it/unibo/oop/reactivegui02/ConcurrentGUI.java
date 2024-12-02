@@ -50,6 +50,12 @@ public final class ConcurrentGUI extends JFrame {
         
     }
 
+     /*
+     * The counter agent is implemented as a nested class. This makes it
+     * invisible outside and encapsulated. 
+     * It manages three buttons:
+     * stop, up and down.
+     */
     private class Agent implements Runnable {
         private volatile boolean  stop;
         private boolean up = true;
@@ -79,11 +85,16 @@ public final class ConcurrentGUI extends JFrame {
         public void stopCounting() {
             this.stop = true;
         }
-
+        /**
+         * External command to start counting up.
+         */
         public void startCountingUp() {
             this.up = true;
         }
 
+        /**
+         * External command to start counting down.
+         */ 
         public void startCountingDown() {;
             this.up = false;
         }

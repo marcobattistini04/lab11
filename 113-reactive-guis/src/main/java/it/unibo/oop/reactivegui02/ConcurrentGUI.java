@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
  */
 @SuppressWarnings("PMD.AvoidPrintStackTrace")
 public final class ConcurrentGUI extends JFrame {
+    private static final long serialVersionUID = 1L;
     private static final double WIDTH_PERC = 0.3;
     private static final double HEIGHT_PERC = 0.15;
     private final JLabel display = new JLabel();
@@ -22,6 +23,9 @@ public final class ConcurrentGUI extends JFrame {
     private final JButton down = new JButton("down");
     private final JButton stop = new JButton("stop");
 
+     /**
+     * Builds a new CGUI.
+     */
     public ConcurrentGUI() {
         super();
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -47,23 +51,23 @@ public final class ConcurrentGUI extends JFrame {
             down.setEnabled(false);
             stop.setEnabled(false);
         });
-        
+
     }
 
      /*
      * The counter agent is implemented as a nested class. This makes it
-     * invisible outside and encapsulated. 
+     * invisible outside and encapsulated.
      * It manages three buttons:
      * stop, up and down.
      */
-    private class Agent implements Runnable {
+    private final class Agent implements Runnable {
         private volatile boolean  stop;
         private boolean up = true;
         private int counter;
 
         @Override
         public void run() {
-                while(!stop) {
+                while (!stop) {
                      try {
                         final var nextText = Integer.toString(this.counter);
                         SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
@@ -95,9 +99,9 @@ public final class ConcurrentGUI extends JFrame {
         /**
          * External command to start counting down.
          */ 
-        public void startCountingDown() {;
+        public void startCountingDown() {
             this.up = false;
         }
     }
-    
+
 }

@@ -7,7 +7,8 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.util.function.Function;
-
+import java.util.stream.Collectors;
+import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -40,8 +41,21 @@ public final class LambdaFilter extends JFrame {
          */
         IDENTITY("No modifications", Function.identity()),
         TO_LOWER_CASE("To lower case", String::toLowerCase), 
-        CHAR_NUMBER("char number", s -> Integer.toString(s.length())),
-        LINES_NUMBER("lines number", s -> Long.toString(s.chars().filter(e -> e == '\n').count() + 1));
+        CHAR_NUMBER("char number", alphanum -> Integer.toString(alphanum.length())),
+        LINES_NUMBER("lines number", alphanum -> Long.toString(alphanum.chars().filter(e -> e == '\n').count() + 1)),
+        ALPHABETICAL_ORDER("alphabetical order", alphanum -> 
+            Arrays.stream(alphanum.split(" "))
+            .sorted()
+            .collect(Collectors.joining("\n"))
+        ),
+        WORD_OCCURRENCE("words occurrences", alphanum ->
+            Arrays.stream(alphanum.split(" "))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .map(e -> e.getKey() + " -> " + e.getValue())
+                .collect(Collectors.joining("\n"))
+        );
         private final String commandName;
         private final Function<String, String> fun;
 

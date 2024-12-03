@@ -41,7 +41,6 @@ public class MultiThreadedSumMatrix implements SumMatrix{
                 for (int j = 0; j < matrix[i].length ; j ++) {
                     this.res += this.matrix[i][j];
                 }
-                
             }
         }
 
@@ -53,18 +52,30 @@ public class MultiThreadedSumMatrix implements SumMatrix{
         public double getResult() {
             return this.res;
         }
-
     }
 
     @Override
     public double sum(double[][] matrix) {
-       final int columns = matrix[0].length;
-       final int rows = matrix.length / columns;
-       final int size = 0;
-       final List<Worker> listOfWorkers = new ArrayList<>(this.threads);
+        final int size = matrix.length % this.threads + matrix.length / this.threads;
+        final List<Worker> listOfWorkers = new ArrayList<>(this.threads);
+        for ( int start = 0; start < matrix.length; start += size) {
+            listOfWorkers.add(new Worker(matrix, start, size));
+        }
 
-       return 0.0;
+        for (final Worker w: listOfWorkers) {
+            w.start();
+        }
 
+        double sum = 0;
+        for (final Worker w: listOfWorkers) {
+            try {
+                w.join();
+                sum += w.getResult();
+            } catch (InterruptedException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return sum;
     }
-    
 }

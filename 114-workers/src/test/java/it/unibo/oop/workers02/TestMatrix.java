@@ -41,7 +41,7 @@ class TestMatrix {
     void testBasic() {
         double sum = 0;
         final double[][] matrix = new double[SIZE][SIZE];
-        for (double[] d : matrix) {
+        for (final double[] d : matrix) {
             for (int i = 0; i < SIZE; i++) {
                 d[i] = i;
                 sum += i;

@@ -3,9 +3,16 @@ package it.unibo.oop.workers02;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiThreadedSumMatrix implements SumMatrix{
-    private int threads;
+/**
+ * Implements the sum of the elements of a matrix using multipleThreads.
+ */
+public final class MultiThreadedSumMatrix implements SumMatrix {
+    private final int threads;
 
+    /**
+     * A simple constructor that accept threads.
+     * @param threads
+     */
     public MultiThreadedSumMatrix(final int threads) {
         this.threads = threads;
     }
@@ -19,8 +26,8 @@ public class MultiThreadedSumMatrix implements SumMatrix{
         /**
          * Build a new worker.
          * 
-         * @param list
-         *            the list to sum
+         * @param matrix
+         *            the submatrix su sum
          * @param startpos
          *            the initial position for this worker
          * @param nelem
@@ -28,7 +35,7 @@ public class MultiThreadedSumMatrix implements SumMatrix{
          */
         Worker(final double[][] matrix, final int startpos, final int nelem) {
             super();
-            this.matrix = matrix;
+            this.matrix = matrix;  //NOPMD, this matrix is only a portion of the original matrix.
             this.startpos = startpos;
             this.nelem = nelem;
         }
@@ -38,7 +45,7 @@ public class MultiThreadedSumMatrix implements SumMatrix{
         public void run() {
             System.out.println("Working from position " + startpos + " to position " + (startpos + nelem - 1));
             for (int i = startpos; i < matrix.length && i < startpos + nelem; i++) {
-                for (int j = 0; j < matrix[i].length ; j ++) {
+                for (int j = 0; j < matrix[i].length; j++) {
                     this.res += this.matrix[i][j];
                 }
             }
@@ -55,10 +62,10 @@ public class MultiThreadedSumMatrix implements SumMatrix{
     }
 
     @Override
-    public double sum(double[][] matrix) {
+    public double sum(final double[][] matrix) {
         final int size = matrix.length % this.threads + matrix.length / this.threads;
         final List<Worker> listOfWorkers = new ArrayList<>(this.threads);
-        for ( int start = 0; start < matrix.length; start += size) {
+        for (int start = 0; start < matrix.length; start += size) {
             listOfWorkers.add(new Worker(matrix, start, size));
         }
 

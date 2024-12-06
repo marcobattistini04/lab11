@@ -19,15 +19,15 @@ public final class AnotherConcurrentGUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final double WIDTH_PERC = 0.3;
     private static final double HEIGHT_PERC = 0.15;
-    private long time = TimeUnit.SECONDS.toMillis(10);
+    private final long time = TimeUnit.SECONDS.toMillis(10);
 
     private final JLabel display = new JLabel();
     private final JButton up = new JButton("up");
     private final JButton down = new JButton("down");
     private final JButton stop = new JButton("stop");
 
-    final CountAgent agent = new CountAgent();
-    final InterruptAgent interAgent = new InterruptAgent();
+    private final transient CountAgent agent = new CountAgent();
+    private final transient InterruptAgent interAgent = new InterruptAgent();
 
      /**
      * Builds a new CGUI.
@@ -37,7 +37,6 @@ public final class AnotherConcurrentGUI extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize((int) (screenSize.getWidth() * WIDTH_PERC), (int) (screenSize.getHeight() * HEIGHT_PERC));
-        
 
         final JPanel panel = new JPanel();
         panel.add(this.display);
@@ -48,7 +47,6 @@ public final class AnotherConcurrentGUI extends JFrame {
         this.getContentPane().add(panel);
         this.setVisible(true);
 
-        
         new Thread(this.agent).start();
         new Thread(this.interAgent).start();
 
@@ -75,7 +73,7 @@ public final class AnotherConcurrentGUI extends JFrame {
             AnotherConcurrentGUI.this.up.setEnabled(false);
             AnotherConcurrentGUI.this.down.setEnabled(false);
             AnotherConcurrentGUI.this.stop.setEnabled(false);
-        }  
+        }
     }
 
      /*
@@ -107,7 +105,7 @@ public final class AnotherConcurrentGUI extends JFrame {
                 }
             }
 
-    
+
         /**
          * External command to stop counting.
          */
